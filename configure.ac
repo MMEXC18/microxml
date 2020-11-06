@@ -285,6 +285,12 @@ dnl Fix "prefix" variable if it hasn't been specified...
 if test "$prefix" = "NONE"; then
 	prefix="/usr/local"
 fi
+if test "$prefix" = "/usr"; then
+	use_rpath = no
+else
+	use_rpath = yes
+fi
+AM_CONDITIONAL(USE_RPATH, [test x$use_rpath = xyes])
 
 dnl Fix "exec_prefix" variable if it hasn't been specified...
 if test "$exec_prefix" = "NONE"; then
