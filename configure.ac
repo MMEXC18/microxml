@@ -160,6 +160,20 @@ if test x$enable_static != xno; then
 	LIBMICROXML_STATIC="libmicroxml.a"
 fi
 
+dnl Fix "prefix" variable if it hasn't been specified...
+if test "$prefix" = "NONE"; then
+	prefix="/usr/local"
+fi
+if test "$prefix" = "/usr"; then
+	use_rpath = no
+else
+	use_rpath = yes
+fi
+AM_CONDITIONAL(USE_RPATH, [test x$use_rpath = xyes])
+AM_LDFLAGS=-no-undefined
+if USE_RPATH 
+AM_LDFLAGS+=-Wl,-rpath -Wl,$(libdir)
+endif
 dnl Shared library support...
 DSO="${DSO:=:}"
 DSOFLAGS="${DSOFLAGS:=}"
@@ -200,7 +214,7 @@ if test x$enable_shared != xno; then
 			LIBMICROXML_SHARED="libmicroxml.so.1.0"
 			DSO="\$(CC)"
 			DSOFLAGS="$DSOFLAGS -Wl,-soname,libmicroxml.so.1,-rpath,\$(libdir) -shared \$(OPTIM)"
-			LDFLAGS="$LDFLAGS -Wl,-rpath,\$(libdir)"
+			LDFLAGS="$LDFLAGS $(AM_LDFLAGS)"
 			;;
 
 		*BSD*)
@@ -280,17 +294,6 @@ else
 			;;
 	esac
 fi
-
-dnl Fix "prefix" variable if it hasn't been specified...
-if test "$prefix" = "NONE"; then
-	prefix="/usr/local"
-fi
-if test "$prefix" = "/usr"; then
-	use_rpath = no
-else
-	use_rpath = yes
-fi
-AM_CONDITIONAL(USE_RPATH, [test x$use_rpath = xyes])
 
 dnl Fix "exec_prefix" variable if it hasn't been specified...
 if test "$exec_prefix" = "NONE"; then
